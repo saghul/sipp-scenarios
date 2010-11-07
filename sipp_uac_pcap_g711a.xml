@@ -84,7 +84,7 @@
   <!-- Play a pre-recorded PCAP file (RTP stream)                       -->
   <nop>
     <action>
-      <exec play_pcap_audio="g722.pcap"/>
+      <exec play_pcap_audio="g711a.pcap"/>
     </action>
   </nop>
 

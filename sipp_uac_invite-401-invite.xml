@@ -38,11 +38,11 @@
     <!-- and microseconds' part as an SDP <version> in "o=" field.      -->
     <nop>
         <action>
-          <gettimeofday assign_to="secs,msecs" />
+          <gettimeofday assign_to="secs,usecs" />
           <assignstr assign_to="secs_str" value="[$secs]" />
-          <assignstr assign_to="msecs_str" value="[$msecs]" />
+          <assignstr assign_to="usecs_str" value="[$usecs]" />
           <ereg regexp="([0-9]+)\." search_in="var" variable="secs_str"  check_it="true" assign_to="dummy,secs_int"/>
-          <ereg regexp="([0-9]+)\." search_in="var" variable="msecs_str" check_it="true" assign_to="dummy,msecs_int"/>
+          <ereg regexp="([0-9]+)\." search_in="var" variable="usecs_str" check_it="true" assign_to="dummy,usecs_int"/>
         </action>
     </nop>
 
@@ -106,7 +106,7 @@
     
           v=0
           s=Performance Test Stream [call_number]
-          o=[field0] [$secs_int] [$msecs_int] IN IP[local_ip_type] [local_ip]
+          o=[field0] [$secs_int] [$usecs_int] IN IP[local_ip_type] [local_ip]
           c=IN IP[media_ip_type] [media_ip]
           t=0 0
           m=audio [media_port] RTP/AVP 0
@@ -147,7 +147,7 @@
         ]]>
     </send>
     
-    <!-- This "pause" can be adusted with -d <mseconds> in command line -->
+    <!-- This "pause" can be adusted with -d <microseconds> in command line -->
     <pause/>
     
     <!-- Send goodBYE -->

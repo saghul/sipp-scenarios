@@ -34,17 +34,19 @@
 
 <scenario name="invite-401-invite">
 
+    <!-- We just want to use seconds since Epoch as an SDP <session id> -->
+    <!-- and microseconds' part as an SDP <version> in "o=" field.      -->
     <nop>
         <action>
-          <gettimeofday assign_to="seconds,microseconds" />
-          <assignstr assign_to="secondsstr" value="[$seconds]" />
-          <assignstr assign_to="microsecondsstr" value="[$microseconds]" />
-          <!-- FIXME: should be `reference'd "dummies" instead of `[micro]seconds' in newer versions: -->
-          <ereg regexp="([0-9]+)\." search_in="var" variable="secondsstr" check_it="true" assign_to="seconds,secondsint"/>
-          <ereg regexp="([0-9]+)\." search_in="var" variable="microsecondsstr" check_it="true" assign_to="microseconds,microsecondsint"/>
+          <gettimeofday assign_to="secs,msecs" />
+          <assignstr assign_to="secs_str" value="[$secs]" />
+          <assignstr assign_to="msecs_str" value="[$msecs]" />
+          <ereg regexp="([0-9]+)\." search_in="var" variable="secs_str"  check_it="true" assign_to="dummy,secs_int"/>
+          <ereg regexp="([0-9]+)\." search_in="var" variable="msecs_str" check_it="true" assign_to="dummy,msecs_int"/>
         </action>
     </nop>
-    
+
+    <!-- Send the first INVITE (with no SDP, it will be rejected anyway) -->
     <send retrans="500">
         <![CDATA[
     
@@ -62,10 +64,12 @@
     
         ]]>
     </send>
-    
+
+    <!-- We should receive "401 Unauthorized" -->
     <recv response="401" auth="true">
     </recv>
     
+    <!-- Send ACK back -->
     <send>
         <![CDATA[
     
@@ -83,6 +87,7 @@
         ]]>
     </send>
     
+    <!-- Send the next INVITE, with SDP -->
     <send retrans="500">
         <![CDATA[
     
@@ -100,8 +105,8 @@
           Content-Length: [len]
     
           v=0
-          s=Performance Test Stream
-          o=[field0] [$secondsint] [$microsecondsint] IN IP[local_ip_type] [local_ip]
+          s=Performance Test Stream [call_number]
+          o=[field0] [$secs_int] [$msecs_int] IN IP[local_ip_type] [local_ip]
           c=IN IP[media_ip_type] [media_ip]
           t=0 0
           m=audio [media_port] RTP/AVP 0
@@ -112,15 +117,19 @@
         ]]>
     </send>
     
+    <!-- We may get "Trying" -->
     <recv response="100" optional="true">
     </recv>
     
+    <!-- We may get "Ringing" -->
     <recv response="180" optional="true">
     </recv>
     
+    <!-- We should get "OK" -->
     <recv response="200">
     </recv>
     
+    <!-- Send ACK back -->
     <send>
         <![CDATA[
     
@@ -138,8 +147,10 @@
         ]]>
     </send>
     
+    <!-- This "pause" can be adusted with -d <mseconds> in command line -->
     <pause/>
     
+    <!-- Send goodBYE -->
     <send retrans="500">
         <![CDATA[
     
@@ -157,6 +168,7 @@
         ]]>
     </send>
     
+    <!-- We should get "OK" -->
     <recv response="200" crlf="true">
     </recv>
     
@@ -166,5 +178,7 @@
     <!-- definition of the call length repartition table (unit is ms)     -->
     <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000"/>
     
+    <Reference variables="dummy">
+
 </scenario>
     

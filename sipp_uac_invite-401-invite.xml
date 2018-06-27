@@ -147,7 +147,7 @@
         ]]>
     </send>
     
-    <!-- This "pause" can be adusted with -d <microseconds> in command line -->
+    <!-- This "pause" can be adusted with -d <milliseconds> in command line -->
     <pause/>
     
     <!-- Send goodBYE -->

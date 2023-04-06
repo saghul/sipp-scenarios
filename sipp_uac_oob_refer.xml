@@ -34,7 +34,7 @@
       Contact: sip:sipp@[local_ip]:[local_port]
       Max-Forwards: 70
       Refer-To: <sip:3333@sip2sip.info>
-
+      Content-Length: [len]
     ]]>
   </send>
 
